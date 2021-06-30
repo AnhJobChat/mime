@@ -8,9 +8,8 @@ import 'package:mime/mime.dart';
 import 'package:mime/src/magic_number.dart';
 import 'package:test/test.dart';
 
-void _expectMimeType(String path, String? expectedMimeType,
-    {List<int>? headerBytes, MimeTypeResolver? resolver}) {
-  String? mimeType;
+void _expectMimeType(String path, String expectedMimeType, {List<int> headerBytes, MimeTypeResolver resolver}) {
+  String mimeType;
   if (resolver == null) {
     mimeType = lookupMimeType(path, headerBytes: headerBytes);
   } else {
@@ -47,46 +46,13 @@ void main() {
     });
 
     test('by-header-bytes', () {
-      _expectMimeType('file.jpg', 'image/png',
-          headerBytes: [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
-      _expectMimeType('file.jpg', 'image/gif', headerBytes: [
-        0x47,
-        0x49,
-        0x46,
-        0x38,
-        0x39,
-        0x61,
-        0x0D,
-        0x0A,
-        0x1A,
-        0x0A
-      ]);
-      _expectMimeType('file.gif', 'image/jpeg', headerBytes: [
-        0xFF,
-        0xD8,
-        0x46,
-        0x38,
-        0x39,
-        0x61,
-        0x0D,
-        0x0A,
-        0x1A,
-        0x0A
-      ]);
-      _expectMimeType('file.mp4', 'video/mp4', headerBytes: [
-        0x00,
-        0x00,
-        0x00,
-        0x04,
-        0x66,
-        0x74,
-        0x79,
-        0x70,
-        0x33,
-        0x67,
-        0x70,
-        0x35
-      ]);
+      _expectMimeType('file.jpg', 'image/png', headerBytes: [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
+      _expectMimeType('file.jpg', 'image/gif',
+          headerBytes: [0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x0D, 0x0A, 0x1A, 0x0A]);
+      _expectMimeType('file.gif', 'image/jpeg',
+          headerBytes: [0xFF, 0xD8, 0x46, 0x38, 0x39, 0x61, 0x0D, 0x0A, 0x1A, 0x0A]);
+      _expectMimeType('file.mp4', 'video/mp4',
+          headerBytes: [0x00, 0x00, 0x00, 0x04, 0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70, 0x35]);
     });
   });
 
@@ -105,14 +71,10 @@ void main() {
 
     test('with-mask', () {
       var resolver = MimeTypeResolver.empty();
-      resolver.addMagicNumber([0x01, 0x02, 0x03], 'my-mime-type',
-          mask: [0x01, 0xFF, 0xFE]);
-      _expectMimeType('file', 'my-mime-type',
-          headerBytes: [0x01, 0x02, 0x03], resolver: resolver);
-      _expectMimeType('file', null,
-          headerBytes: [0x01, 0x03, 0x03], resolver: resolver);
-      _expectMimeType('file', 'my-mime-type',
-          headerBytes: [0xFF, 0x02, 0x02], resolver: resolver);
+      resolver.addMagicNumber([0x01, 0x02, 0x03], 'my-mime-type', mask: [0x01, 0xFF, 0xFE]);
+      _expectMimeType('file', 'my-mime-type', headerBytes: [0x01, 0x02, 0x03], resolver: resolver);
+      _expectMimeType('file', null, headerBytes: [0x01, 0x03, 0x03], resolver: resolver);
+      _expectMimeType('file', 'my-mime-type', headerBytes: [0xFF, 0x02, 0x02], resolver: resolver);
     });
   });
 
@@ -137,8 +99,7 @@ void main() {
     });
 
     test('returns inputted string for unrecognized mime', () {
-      expect(
-          extensionFromMime('unrecognized_mime'), equals('unrecognized_mime'));
+      expect(extensionFromMime('unrecognized_mime'), equals('unrecognized_mime'));
       expect(extensionFromMime('i/am/not/a/mime'), equals('i/am/not/a/mime'));
     });
   });

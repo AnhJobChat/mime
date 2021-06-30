@@ -7,7 +7,7 @@ library mime.magic_number;
 class MagicNumber {
   final String mimeType;
   final List<int> numbers;
-  final List<int>? mask;
+  final List<int> mask;
 
   const MagicNumber(this.mimeType, this.numbers, {this.mask});
 
@@ -16,7 +16,7 @@ class MagicNumber {
 
     for (var i = 0; i < numbers.length; i++) {
       if (mask != null) {
-        if ((mask![i] & numbers[i]) != (mask![i] & header[i])) return false;
+        if ((mask[i] & numbers[i]) != (mask[i] & header[i])) return false;
       } else {
         if (numbers[i] != header[i]) return false;
       }
@@ -37,32 +37,7 @@ const List<MagicNumber> initialMagicNumbers = [
   MagicNumber('image/png', [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]),
   MagicNumber('image/tiff', [0x49, 0x49, 0x2A, 0x00]),
   MagicNumber('image/tiff', [0x4D, 0x4D, 0x00, 0x2A]),
-  MagicNumber('video/mp4', [
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x66,
-    0x74,
-    0x79,
-    0x70,
-    0x33,
-    0x67,
-    0x70,
-    0x35
-  ], mask: [
-    0xFF,
-    0xFF,
-    0xFF,
-    0x00,
-    0xFF,
-    0xFF,
-    0xFF,
-    0xFF,
-    0xFF,
-    0xFF,
-    0xFF,
-    0xFF
-  ]),
+  MagicNumber('video/mp4', [0x00, 0x00, 0x00, 0x00, 0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70, 0x35],
+      mask: [0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]),
   MagicNumber('model/gltf-binary', [0x46, 0x54, 0x6C, 0x67]),
 ];

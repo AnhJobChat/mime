@@ -26,8 +26,8 @@ void _runParseTest(
   String message,
   String boundary,
   TestMode mode, [
-  List<Map>? expectedHeaders,
-  List<String?>? expectedParts,
+  List<Map> expectedHeaders,
+  List<String > expectedParts,
   bool expectError = false,
 ]) {
   Future testWrite(List<int> data, [int chunkSize = -1]) {
@@ -47,8 +47,8 @@ void _runParseTest(
         case TestMode.immediateListen:
           futures.add(multipart.fold<List<int>>(
               [], (buffer, data) => buffer..addAll(data)).then((data) {
-            if (expectedParts?[part] != null) {
-              expect(data, equals(expectedParts?[part]!.codeUnits));
+            if (expectedParts[part] != null) {
+              expect(data, equals(expectedParts[part].codeUnits));
             }
           }));
           break;
@@ -61,8 +61,8 @@ void _runParseTest(
                 (buffer, data) => buffer..addAll(data),
               ).then(
                 (data) {
-                  if (expectedParts?[part] != null) {
-                    expect(data, equals(expectedParts?[part]!.codeUnits));
+                  if (expectedParts[part] != null) {
+                    expect(data, equals(expectedParts[part].codeUnits));
                   }
                 },
               ),
@@ -74,14 +74,14 @@ void _runParseTest(
           var completer = Completer();
           futures.add(completer.future);
           var buffer = [];
-          late StreamSubscription subscription;
+          StreamSubscription subscription;
           subscription = multipart.listen((data) {
             buffer.addAll(data);
             subscription.pause();
             Future(() => subscription.resume());
           }, onDone: () {
-            if (expectedParts?[part] != null) {
-              expect(buffer, equals(expectedParts?[part]!.codeUnits));
+            if (expectedParts[part] != null) {
+              expect(buffer, equals(expectedParts[part].codeUnits));
             }
             completer.complete();
           });
@@ -116,7 +116,7 @@ void _runParseTest(
       return multipart.fold<List<int>>([], (b, d) => b..addAll(d)).then(
         (data) {
           if (expectedParts != null && expectedParts[0] != null) {
-            expect(data, equals(expectedParts[0]!.codeUnits));
+            expect(data, equals(expectedParts[0].codeUnits));
           }
         },
       );
@@ -135,7 +135,7 @@ void _runParseTest(
     var controller = StreamController<List<int>>(sync: true);
     var stream =
         controller.stream.transform(MimeMultipartTransformer(boundary));
-    late StreamSubscription subscription;
+    StreamSubscription subscription;
     var i = 0;
     var futures = <Future>[];
     subscription = stream.listen((multipart) {
@@ -151,7 +151,7 @@ void _runParseTest(
       futures.add(
           multipart.fold<List<int>>([], (b, d) => b..addAll(d)).then((data) {
         if (expectedParts != null && expectedParts[partIndex] != null) {
-          expect(data, equals(expectedParts[partIndex]!.codeUnits));
+          expect(data, equals(expectedParts[partIndex].codeUnits));
         }
       }));
 
@@ -181,7 +181,7 @@ void _runParseTest(
         completes);
   });
 
-  if (expectedParts!.isNotEmpty) {
+  if (expectedParts.isNotEmpty) {
     test('test-first-part-only', () {
       expect(
           Future.wait([
@@ -210,8 +210,8 @@ void _runParseTest(
 }
 
 void _testParse(String message, String boundary,
-    [List<Map>? expectedHeaders,
-    List<String?>? expectedParts,
+    [List<Map> expectedHeaders,
+    List<String > expectedParts,
     bool expectError = false]) {
   _runParseTest(message, boundary, TestMode.immediateListen, expectedHeaders,
       expectedParts, expectError);
